@@ -1,7 +1,6 @@
 package com.example.hello.controller;
 
 import java.util.Arrays;
-
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
