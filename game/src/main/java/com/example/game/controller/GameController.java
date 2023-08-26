@@ -51,6 +51,7 @@ public class GameController {
     int answer = (Integer) session.getAttribute("answer");
 
     // Get user's answer history
+    @SuppressWarnings("unchecked")
     List<History> histories = (List<History>) session.getAttribute("histories");
     if (histories == null) {
       histories = new ArrayList<>();
