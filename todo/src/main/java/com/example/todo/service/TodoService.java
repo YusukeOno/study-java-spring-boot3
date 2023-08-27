@@ -1,8 +1,11 @@
 package com.example.todo.service;
 
+import com.example.todo.entity.Todo;
 import com.example.todo.form.TodoData;
+import com.example.todo.form.TodoQuery;
 import java.time.DateTimeException;
 import java.time.LocalDate;
+import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -61,5 +64,13 @@ public class TodoService {
     }
 
     return ans;
+  }
+
+  public List<Todo> doQuery(TodoQuery todoQuery) {
+    return null;
+  }
+
+  public boolean isValid(TodoQuery todoQuery, BindingResult result) {
+    return false;
   }
 }

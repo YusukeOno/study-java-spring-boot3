@@ -2,6 +2,7 @@ package com.example.todo.controller;
 
 import com.example.todo.entity.Todo;
 import com.example.todo.form.TodoData;
+import com.example.todo.form.TodoQuery;
 import com.example.todo.repository.TodoRepository;
 import com.example.todo.service.TodoService;
 import jakarta.servlet.http.HttpSession;
@@ -39,6 +40,7 @@ public class TodoListController {
     mv.setViewName("todoList");
     List<Todo> todoList = todoRepository.findAll();
     mv.addObject("todoList", todoList);
+    mv.addObject("todoQuery", new TodoQuery());
     return mv;
   }
 
@@ -69,6 +71,27 @@ public class TodoListController {
     mv.setViewName("todoForm");
     mv.addObject("todoData", new TodoData());
     session.setAttribute("mode", "create");
+    return mv;
+  }
+
+  /**
+   * queryTodo.
+   *
+   * @param todoQuery TodoQuery
+   * @param result    BindingResult
+   * @param mv        ModelAndView
+   * @return ModelAndView
+   */
+  @PostMapping("/todo/query")
+  public ModelAndView queryTodo(
+      @ModelAttribute TodoQuery todoQuery, BindingResult result, ModelAndView mv) {
+    mv.setViewName("todoList");
+    List<Todo> todoList = null;
+    if (todoService.isValid(todoQuery, result)) {
+      // エラーがなければ検索
+      todoList = todoService.doQuery(todoQuery);
+    }
+    mv.addObject("todoList", todoList);
     return mv;
   }
 
