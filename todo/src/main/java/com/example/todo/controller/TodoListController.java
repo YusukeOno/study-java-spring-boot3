@@ -4,13 +4,16 @@ import com.example.todo.entity.Todo;
 import com.example.todo.form.TodoData;
 import com.example.todo.repository.TodoRepository;
 import com.example.todo.service.TodoService;
+import jakarta.servlet.http.HttpSession;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -22,6 +25,7 @@ import org.springframework.web.servlet.ModelAndView;
 public class TodoListController {
   private final TodoRepository todoRepository;
   private final TodoService todoService;
+  private final HttpSession session;
 
   /**
    * showTodoList.
@@ -39,6 +43,22 @@ public class TodoListController {
   }
 
   /**
+   * todoById.
+   *
+   * @param id todo.id
+   * @param mv ModelAndView
+   * @return ModelAndView
+   */
+  @GetMapping("/todo/{id}")
+  public ModelAndView todoById(@PathVariable(name = "id") int id, ModelAndView mv) {
+    mv.setViewName("todoForm");
+    Todo todo = todoRepository.findById(id).get();
+    mv.addObject("todoData", todo);
+    session.setAttribute("mode", "update");
+    return mv;
+  }
+
+  /**
    * createTodo.
    *
    * @param mv ModelAndView
@@ -48,6 +68,7 @@ public class TodoListController {
   public ModelAndView createTodo(ModelAndView mv) {
     mv.setViewName("todoForm");
     mv.addObject("todoData", new TodoData());
+    session.setAttribute("mode", "create");
     return mv;
   }
 
@@ -57,25 +78,61 @@ public class TodoListController {
    *
    * @param todoData TodoData
    * @param result   BindingResult
-   * @param mv       ModelAndView
+   * @param model    ModelAndView
    * @return ModelAndView
    */
   @PostMapping("/todo/create")
-  public ModelAndView createTodo(
-      @ModelAttribute @Validated TodoData todoData, BindingResult result, ModelAndView mv) {
+  public String createTodo(
+      @ModelAttribute @Validated TodoData todoData, BindingResult result, Model model) {
 
     // エラーチェック
     boolean isValid = todoService.isValid(todoData, result);
-
     if (!result.hasErrors() && isValid) {
       // エラーなし
       Todo todo = todoData.toEntity();
       todoRepository.saveAndFlush(todo);
-      return showTodoList(mv);
+      return "redirect:/todo";
     }
 
-    mv.setViewName("todoForm");
-    return mv;
+    // エラーあり
+    return "todoForm";
+  }
+
+  /**
+   * updateTodo.
+   *
+   * @param todoData TodoData
+   * @param result   BindingResult
+   * @param model    Model
+   * @return redirect
+   */
+  @PostMapping("/todo/update")
+  public String updateTodo(
+      @ModelAttribute @Validated TodoData todoData, BindingResult result, Model model) {
+
+    // エラーチェック
+    boolean isValid = todoService.isValid(todoData, result);
+    if (!result.hasErrors() && isValid) {
+      // エラー無し
+      Todo todo = todoData.toEntity();
+      todoRepository.saveAndFlush(todo);
+      return "redirect:/todo";
+    }
+
+    // エラーあり
+    return "todoForm";
+  }
+
+  /**
+   * deleteTodo.
+   *
+   * @param todoData TodoData
+   * @return redirect
+   */
+  @PostMapping("/todo/delete")
+  public String deleteTodo(@ModelAttribute TodoData todoData) {
+    todoRepository.deleteById(todoData.getId());
+    return "redirect:/todo";
   }
 
   /**
