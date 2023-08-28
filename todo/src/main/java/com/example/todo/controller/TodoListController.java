@@ -131,8 +131,9 @@ public class TodoListController {
     List<Todo> todoList = null;
     if (todoService.isValid(todoQuery, result)) {
       // エラーがなければ検索
-      // todoList = todoService.doQuery(todoQuery);
-      todoList = todoDaoImpl.findByJpql(todoQuery);
+      // todoList = todoService.doQuery(todoQuery); //
+      // todoList = todoDaoImpl.findByJpql(todoQuery); // JPQL
+      todoList = todoDaoImpl.findByCriteria(todoQuery); // Criteria
     }
     mv.addObject("todoList", todoList);
     return mv;
