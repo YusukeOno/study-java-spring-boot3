@@ -117,7 +117,7 @@ public class TodoService {
    * doQuery.
    *
    * @param todoQuery TodoQuery
-   * @return Todo
+   * @return TodoList
    */
   public List<Todo> doQuery(TodoQuery todoQuery) {
     List<Todo> todoList = null;
@@ -134,8 +134,22 @@ public class TodoService {
       // 期限 開始〜
       todoList = todoRepository.findByDeadlineGreaterThanEqualOrderByDeadlineAsc(
           Utils.str2date(todoQuery.getDeadlineFrom()));
-
+    } else if (todoQuery.getDeadlineFrom().equals("") && !todoQuery.getDeadlineTo().equals("")) {
+      // 期限 〜終了
+      todoList = todoRepository.findByDeadlineLessThanEqualOrderByDeadlineAsc(
+          Utils.str2date(todoQuery.getDeadlineTo()));
+    } else if (!todoQuery.getDeadlineFrom().equals("") && !todoQuery.getDeadlineTo().equals("")) {
+      // 期限 開始〜終了
+      todoList = todoRepository.findByDeadlineBetweenOrderByDeadlineAsc(
+          Utils.str2date(todoQuery.getDeadlineFrom()),
+          Utils.str2date(todoQuery.getDeadlineTo()));
+    } else if (todoQuery.getDone() != null && todoQuery.getDone().equals("Y")) {
+      // 完了で検索
+      todoList = todoRepository.findByDone("Y");
+    } else {
+      // 入力条件がなければ全件検索
+      todoList = todoRepository.findAll();
     }
-    return null;
+    return todoList;
   }
 }
