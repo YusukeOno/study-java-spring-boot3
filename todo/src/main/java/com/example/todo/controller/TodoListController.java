@@ -1,13 +1,17 @@
 package com.example.todo.controller;
 
+import com.example.todo.dao.TodoDaoImpl;
 import com.example.todo.entity.Todo;
 import com.example.todo.form.TodoData;
 import com.example.todo.form.TodoQuery;
 import com.example.todo.repository.TodoRepository;
 import com.example.todo.service.TodoService;
+import jakarta.annotation.PostConstruct;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import jakarta.servlet.http.HttpSession;
 import java.util.List;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -22,11 +26,23 @@ import org.springframework.web.servlet.ModelAndView;
  * TodoListController.
  */
 @Controller
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class TodoListController {
   private final TodoRepository todoRepository;
   private final TodoService todoService;
   private final HttpSession session;
+
+  @PersistenceContext
+  private EntityManager entityManager;
+  TodoDaoImpl todoDaoImpl;
+
+  /**
+   * init.
+   */
+  @PostConstruct
+  public void init() {
+    todoDaoImpl = new TodoDaoImpl(entityManager);
+  }
 
   /**
    * showTodoList.
@@ -115,7 +131,8 @@ public class TodoListController {
     List<Todo> todoList = null;
     if (todoService.isValid(todoQuery, result)) {
       // エラーがなければ検索
-      todoList = todoService.doQuery(todoQuery);
+      // todoList = todoService.doQuery(todoQuery);
+      todoList = todoDaoImpl.findByJpql(todoQuery);
     }
     mv.addObject("todoList", todoList);
     return mv;
