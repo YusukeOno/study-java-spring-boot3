@@ -75,27 +75,6 @@ public class TodoListController {
   }
 
   /**
-   * queryTodo.
-   *
-   * @param todoQuery TodoQuery
-   * @param result    BindingResult
-   * @param mv        ModelAndView
-   * @return ModelAndView
-   */
-  @PostMapping("/todo/query")
-  public ModelAndView queryTodo(
-      @ModelAttribute TodoQuery todoQuery, BindingResult result, ModelAndView mv) {
-    mv.setViewName("todoList");
-    List<Todo> todoList = null;
-    if (todoService.isValid(todoQuery, result)) {
-      // エラーがなければ検索
-      todoList = todoService.doQuery(todoQuery);
-    }
-    mv.addObject("todoList", todoList);
-    return mv;
-  }
-
-  /**
    * createTodo.<br />
    * Todo入力画面で[登録]ボタンを押下された時
    *
@@ -119,6 +98,27 @@ public class TodoListController {
 
     // エラーあり
     return "todoForm";
+  }
+
+  /**
+   * queryTodo.
+   *
+   * @param todoQuery TodoQuery
+   * @param result    BindingResult
+   * @param mv        ModelAndView
+   * @return ModelAndView
+   */
+  @PostMapping("/todo/query")
+  public ModelAndView queryTodo(
+      @ModelAttribute TodoQuery todoQuery, BindingResult result, ModelAndView mv) {
+    mv.setViewName("todoList");
+    List<Todo> todoList = null;
+    if (todoService.isValid(todoQuery, result)) {
+      // エラーがなければ検索
+      todoList = todoService.doQuery(todoQuery);
+    }
+    mv.addObject("todoList", todoList);
+    return mv;
   }
 
   /**
