@@ -10,8 +10,10 @@ import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.servlet.http.HttpSession;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -47,16 +49,20 @@ public class TodoListController {
   /**
    * showTodoList.
    *
-   * @param mv ModelAndView
+   * @param mv       ModelAndView
+   * @param pageable Pageable
    * @return ModelAndView
    */
   @GetMapping("/todo")
-  public ModelAndView showTodoList(ModelAndView mv) {
+  public ModelAndView showTodoList(ModelAndView mv,
+      @PageableDefault(page = 0, size = 5, sort = "id") Pageable pageable) {
     // 一覧を検索して表示する
     mv.setViewName("todoList");
-    List<Todo> todoList = todoRepository.findAll();
-    mv.addObject("todoList", todoList);
+    Page<Todo> todoPage = todoRepository.findAll(pageable);
     mv.addObject("todoQuery", new TodoQuery());
+    mv.addObject("todoPage", todoPage);
+    mv.addObject("todoList", todoPage.getContent());
+    session.setAttribute("todoQuery", new TodoQuery());
     return mv;
   }
 
@@ -121,21 +127,36 @@ public class TodoListController {
    *
    * @param todoQuery TodoQuery
    * @param result    BindingResult
+   * @param pageable  Pageable
    * @param mv        ModelAndView
    * @return ModelAndView
    */
   @PostMapping("/todo/query")
   public ModelAndView queryTodo(
-      @ModelAttribute TodoQuery todoQuery, BindingResult result, ModelAndView mv) {
+      @ModelAttribute TodoQuery todoQuery,
+      BindingResult result,
+      @PageableDefault(page = 0, size = 5) Pageable pageable,
+      ModelAndView mv) {
     mv.setViewName("todoList");
-    List<Todo> todoList = null;
+    // List<Todo> todoList = null;
+    Page<Todo> todoPage = null;
     if (todoService.isValid(todoQuery, result)) {
       // エラーがなければ検索
       // todoList = todoService.doQuery(todoQuery); //
       // todoList = todoDaoImpl.findByJpql(todoQuery); // JPQL
-      todoList = todoDaoImpl.findByCriteria(todoQuery); // Criteria
+      // todoList = todoDaoImpl.findByCriteria(todoQuery); // Criteria
+      todoPage = todoDaoImpl.findByCriteria(todoQuery, pageable);
+
+      // 入力された検索条件をsessionに保存
+      session.setAttribute("todoQuery", todoQuery);
+      mv.addObject("todoPage", todoPage);
+      mv.addObject("todoList", todoPage.getContent());
+    } else {
+      // エラーがあった場合検索
+      mv.addObject("todoPage", null);
+      mv.addObject("todoList", null);
     }
-    mv.addObject("todoList", todoList);
+
     return mv;
   }
 
