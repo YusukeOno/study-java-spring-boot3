@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.exc.StreamReadException;
@@ -21,7 +20,7 @@ public class UserService {
     public UserService() throws StreamReadException, DatabindException, IOException {
         ObjectMapper mapper = new ObjectMapper();
         users = mapper.readValue(new File("user.json"),
-                mapper.getTypeFactory().constructCollectionType(List.class, User.class));
+                mapper.getTypeFactory().constructCollectionType(List.class, CustomUser.class));
     }
 
     public CustomUser findByUsername(String username) {
