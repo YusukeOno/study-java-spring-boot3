@@ -13,11 +13,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jp.co.nss.ojt2024.example.model.CustomUser;
 
 @Service
-public class UserService {
+public class CustomUserService {
 
     private List<CustomUser> users;
 
-    public UserService() throws StreamReadException, DatabindException, IOException {
+    public CustomUserService() throws StreamReadException, DatabindException, IOException {
         ObjectMapper mapper = new ObjectMapper();
         users = mapper.readValue(new File("user.json"),
                 mapper.getTypeFactory().constructCollectionType(List.class, CustomUser.class));
