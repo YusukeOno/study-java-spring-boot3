@@ -17,7 +17,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        jp.co.nss.ojt2024.example.model.User foundUser = userService.findByUsername(username);
+        User foundUser = userService.findByUsername(username);
 
         if (foundUser != null) {
             UserBuilder builder = User.withUsername(foundUser.getUsername());
