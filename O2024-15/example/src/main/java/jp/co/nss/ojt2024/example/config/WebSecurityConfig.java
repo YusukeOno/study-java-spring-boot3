@@ -24,10 +24,19 @@ public class WebSecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests.requestMatchers("/login").permitAll()
-                .anyRequest().authenticated())
-                .formLogin(formLogin -> formLogin.loginPage("/login").defaultSuccessUrl("/hello", true).permitAll())
-                .logout(logout -> logout.permitAll());
+        http
+            .authorizeHttpRequests(authorize -> authorize
+                .requestMatchers("/login").permitAll() // /loginへのアクセスは認証不要
+                .anyRequest().authenticated() // それ以外のリクエストは認証を要求
+            )
+            .formLogin(formLogin -> formLogin
+                .loginPage("/login") // ログインページを設定
+                .defaultSuccessUrl("/hello", true) // 認証成功後にリダイレクトするURLを設定
+                .permitAll() // ログインページへのアクセスは許可
+            )
+            .logout(logout -> logout
+                .permitAll() // ログアウトページへのアクセスを許可
+            );
         return http.build();
     }
 
@@ -46,5 +55,4 @@ public class WebSecurityConfig {
             throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
-
 }
