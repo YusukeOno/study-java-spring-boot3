@@ -3,7 +3,7 @@ package jp.co.nss.ojt2024.example.model;
 import lombok.Data;
 
 @Data
-public class User {
+public class CustomUser {
     private String username;
     private String password;
 

@@ -8,6 +8,8 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.User.UserBuilder;
 import org.springframework.stereotype.Service;
 
+import jp.co.nss.ojt2024.example.model.CustomUser;
+
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
@@ -17,7 +19,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        User foundUser = userService.findByUsername(username);
+        CustomUser foundUser = userService.findByUsername(username);
 
         if (foundUser != null) {
             UserBuilder builder = User.withUsername(foundUser.getUsername());
