@@ -23,7 +23,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
         if (foundUser != null) {
             UserBuilder builder = User.withUsername(foundUser.getUsername());
-            builder.password(foundUser.getPassword());
+            builder.password("{noop}"+foundUser.getPassword());
             builder.roles("USER");
             return builder.build();
         } else {
